@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { ChatCard } from "./chat-card";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
-import { Button } from "../ui/button";
+import { Button } from "~/components/ui/button";
 
 export const ChatList: FC = () => {
   return (
