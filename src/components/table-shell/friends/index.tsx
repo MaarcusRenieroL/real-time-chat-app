@@ -6,11 +6,14 @@ import React, { type FC, useMemo } from "react";
 import { DataTableColumnHeader } from "~/components/data-table/data-table-column-header";
 import { DataTable } from "~/components/data-table";
 import { FriendCellActions } from "./actions";
+import { Row } from "../friend-requests";
 
-type TaskTableShellProps = {};
+type TaskTableShellProps = {
+  data: Row[];
+};
 
-export const FriendTableShell: FC<TaskTableShellProps> = ({}) => {
-  const FriendsColumnDef = useMemo<ColumnDef<any>[]>(
+export const FriendTableShell: FC<TaskTableShellProps> = ({ data }) => {
+  const FriendsColumnDef = useMemo<ColumnDef<Row>[]>(
     () => [
       {
         id: "select",
@@ -44,30 +47,30 @@ export const FriendTableShell: FC<TaskTableShellProps> = ({}) => {
         enableHiding: true,
       },
       {
-        id: "name",
+        id: "senderName",
         header: ({ column }) => (
           <div>
             <DataTableColumnHeader column={column} title="Name" />
           </div>
         ),
         cell: ({ row }) => (
-          <div className="min-w-max mr-auto">{row.getValue("name")}</div>
+          <div className="min-w-max mr-auto">{row.getValue("senderName")}</div>
         ),
-        accessorKey: "name",
+        accessorKey: "senderName",
         enableSorting: true,
         enableHiding: true,
       },
       {
-        id: "email",
+        id: "senderEmail",
         header: ({ column }) => (
           <div>
             <DataTableColumnHeader column={column} title="Email" />
           </div>
         ),
         cell: ({ row }) => (
-          <div className="min-w-max mr-auto">{row.getValue("email")}</div>
+          <div className="min-w-max mr-auto">{row.getValue("senderEmail")}</div>
         ),
-        accessorKey: "email",
+        accessorKey: "senderEmail",
         enableSorting: true,
         enableHiding: true,
       },
@@ -80,17 +83,17 @@ export const FriendTableShell: FC<TaskTableShellProps> = ({}) => {
         ),
         cell: ({ row }) => (
           <div className="flex items-center justify-center min-w-max">
-            <FriendCellActions data={row.original} />
+            <FriendCellActions data={data} rowData={row.original} />
           </div>
         ),
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [data],
   );
   return (
     <DataTable
-      data={[{ name: "Maarcus", email: "maarcusreniero@gmail.com" }]}
+      data={data}
       columns={FriendsColumnDef}
       filterableColumns={[]}
       searchPlaceholder="Search users..."

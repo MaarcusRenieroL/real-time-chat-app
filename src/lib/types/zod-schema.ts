@@ -9,3 +9,7 @@ export const addFriendSchema = z.object({
       message: "Invalid email",
     }),
 });
+
+export const friendSchema = z.object({
+  id: z.string(),
+});

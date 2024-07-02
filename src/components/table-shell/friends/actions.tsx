@@ -1,59 +1,51 @@
-import { FC } from "react";
-import {
-  CopyIcon,
-  DotsHorizontalIcon,
-  TrashIcon,
-  Pencil1Icon,
-} from "@radix-ui/react-icons";
+import { FC, useState } from "react";
+import { CircleBackslashIcon } from "@radix-ui/react-icons";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { Row } from "../friend-requests";
 
 type Props = {
-  data: any;
+  rowData: Row;
+  data: Row[];
 };
 
-export const FriendCellActions: FC<Props> = ({ data }) => {
-  const onCopy = (id: string) => {
-    navigator.clipboard.writeText(id);
-    toast("Success", {
-      description: "Category ID copied",
-      duration: 1000,
-    });
+export const FriendCellActions: FC<Props> = ({ data, rowData }) => {
+  const [allFriends, setAllFriends] = useState(data);
+  const router = useRouter();
+
+  const removeFriend = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/friends/remove",
+        {
+          id: rowData.senderId,
+        },
+      );
+
+      setAllFriends((prev) =>
+        prev.filter((request) => request.senderId !== rowData.senderId),
+      );
+
+      toast("Success", {
+        description: response.data,
+      });
+
+      router.refresh();
+    } catch (error) {
+      console.log(error);
+      toast("Error", {
+        description: "Something went wrong",
+      });
+    }
   };
 
   return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon">
-            <DotsHorizontalIcon className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => onCopy(data.categoryId)}>
-            <CopyIcon className="h-4 w-4 mr-2" />
-            Copy Id
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Pencil1Icon className="h-4 w-4 mr-2" />
-            Edit
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <TrashIcon className="h-4 w-4 mr-2" />
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </>
+    <div className="flex items-center justify-between space-x-5">
+      <Button size="icon" variant="destructive" onClick={removeFriend}>
+        <CircleBackslashIcon />
+      </Button>
+    </div>
   );
 };

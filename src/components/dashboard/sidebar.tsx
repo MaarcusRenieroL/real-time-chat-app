@@ -8,7 +8,11 @@ import { Button } from "../ui/button";
 import { usePathname } from "next/navigation";
 import { ModeToggle } from "../mode-toggle";
 
-export const Sidebar: FC = () => {
+type Props = {
+  friendRequestCount: number;
+};
+
+export const Sidebar: FC<Props> = ({ friendRequestCount }) => {
   const pathname = usePathname();
   return (
     <div className="rounded-md border-gray-200 p-4 border w-20 hidden lg:block h-full">
@@ -32,6 +36,9 @@ export const Sidebar: FC = () => {
               className="p-2"
             >
               <PersonIcon className="h-8 w-8" />
+              {friendRequestCount > 0 && (
+                <p className="text-xs font-semibold">{friendRequestCount}</p>
+              )}
             </Button>
           </Link>
         </div>

@@ -7,8 +7,18 @@ import { DataTableColumnHeader } from "~/components/data-table/data-table-column
 import { DataTable } from "~/components/data-table";
 import { FriendRequestCellActions } from "./actions";
 
-export const FriendRequestTableShell: FC = ({}) => {
-  const FriendsColumnDef = useMemo<ColumnDef<any>[]>(
+export type Row = {
+  senderId: string;
+  senderName: string;
+  senderEmail: string;
+};
+
+type Props = {
+  data: Row[];
+};
+
+export const FriendRequestTableShell: FC<Props> = ({ data }) => {
+  const FriendsColumnDef = useMemo<ColumnDef<Row>[]>(
     () => [
       {
         id: "select",
@@ -42,30 +52,30 @@ export const FriendRequestTableShell: FC = ({}) => {
         enableHiding: true,
       },
       {
-        id: "name",
+        id: "senderName",
         header: ({ column }) => (
           <div>
             <DataTableColumnHeader column={column} title="Name" />
           </div>
         ),
         cell: ({ row }) => (
-          <div className="min-w-max mr-auto">{row.getValue("name")}</div>
+          <div className="min-w-max mr-auto">{row.getValue("senderName")}</div>
         ),
-        accessorKey: "name",
+        accessorKey: "senderName",
         enableSorting: true,
         enableHiding: true,
       },
       {
-        id: "email",
+        id: "senderEmail",
         header: ({ column }) => (
           <div>
             <DataTableColumnHeader column={column} title="Email" />
           </div>
         ),
         cell: ({ row }) => (
-          <div className="min-w-max mr-auto">{row.getValue("email")}</div>
+          <div className="min-w-max mr-auto">{row.getValue("senderEmail")}</div>
         ),
-        accessorKey: "email",
+        accessorKey: "senderEmail",
         enableSorting: true,
         enableHiding: true,
       },
@@ -78,17 +88,17 @@ export const FriendRequestTableShell: FC = ({}) => {
         ),
         cell: ({ row }) => (
           <div className="flex items-center justify-center min-w-max">
-            <FriendRequestCellActions data={row.original} />
+            <FriendRequestCellActions rowData={row.original} data={data} />
           </div>
         ),
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [data],
   );
   return (
     <DataTable
-      data={[{ name: "Maarcus", email: "maarcusreniero@gmail.com" }]}
+      data={data}
       columns={FriendsColumnDef}
       filterableColumns={[]}
       searchPlaceholder="Search users..."

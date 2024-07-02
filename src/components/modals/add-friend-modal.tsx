@@ -50,7 +50,7 @@ export const AddFriendModal: FC = () => {
 
       if (response.status === 200) {
         toast("Success", {
-          description: "Your friend has been added",
+          description: "Friend request sent",
         });
       }
 
