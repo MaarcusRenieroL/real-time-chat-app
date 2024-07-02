@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FC } from "react";
+import axios, { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "~/components/ui/button";
@@ -23,6 +24,7 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
+import { toast } from "sonner";
 
 export const AddFriendModal: FC = () => {
   const [loading, setIsLoading] = useState(false);
@@ -38,15 +40,31 @@ export const AddFriendModal: FC = () => {
   const handleAddFriendSubmit = async (
     data: z.infer<typeof addFriendSchema>,
   ) => {
-    setIsLoading(true);
     try {
-      console.log(data);
+      console.log("Validating");
+      setIsLoading(true);
+
+      const response = await axios.post("http://localhost:3000/api/friends", {
+        data: data,
+      });
+
+      if (response.status === 200) {
+        toast("Success", {
+          description: "Your friend has been added",
+        });
+      }
+
       setIsLoading(false);
     } catch (error) {
-      setIsLoading(false);
-      console.log(error);
-    } finally {
-      setIsLoading(false);
+      if (error instanceof z.ZodError) {
+        return;
+      }
+
+      if (error instanceof AxiosError) {
+        toast("Error", {
+          description: error.response?.data,
+        });
+      }
     }
   };
 
