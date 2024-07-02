@@ -41,7 +41,7 @@ export const Sidebar: FC = () => {
             <Button
               size="icon"
               variant={
-                pathname === "/dashboard/friends" ? "default" : "outline"
+                pathname === "/dashboard/settings" ? "default" : "outline"
               }
               className="p-2"
             >

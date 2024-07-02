@@ -91,7 +91,7 @@ export const FriendRequestTableShell: FC = ({}) => {
       data={[{ name: "Maarcus", email: "maarcusreniero@gmail.com" }]}
       columns={FriendsColumnDef}
       filterableColumns={[]}
-      searchPlaceholder="Search tasks..."
+      searchPlaceholder="Search users..."
       messages={{
         filteredDataNotFoundMessage: {
           title: "No friend requests found!",

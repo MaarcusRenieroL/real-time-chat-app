@@ -93,15 +93,15 @@ export const FriendTableShell: FC<TaskTableShellProps> = ({}) => {
       data={[{ name: "Maarcus", email: "maarcusreniero@gmail.com" }]}
       columns={FriendsColumnDef}
       filterableColumns={[]}
-      searchPlaceholder="Search tasks..."
+      searchPlaceholder="Search users..."
       messages={{
         filteredDataNotFoundMessage: {
-          title: "No tasks found!",
-          description: "Add some posts to get started!",
+          title: "No users found!",
+          description: "Add users to get started!",
         },
         emptyDataMessage: {
-          title: "No tasks found!",
-          description: "Add some posts to get started!",
+          title: "No users found!",
+          description: "Add users to get started!",
         },
       }}
     />
