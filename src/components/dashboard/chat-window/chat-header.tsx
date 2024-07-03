@@ -3,18 +3,23 @@ import { PhoneIcon, CameraIcon, SettingsIcon } from "lucide-react";
 import Image from "next/image";
 import { Button } from "~/components/ui/button";
 
-export const ChatHeader: FC = () => {
+type Props = {
+  userName: string;
+  imageUrl: string;
+};
+
+export const ChatHeader: FC<Props> = ({ userName, imageUrl }) => {
   return (
     <div className="rounded-md border-gray-200 border p-2 flex items-center justify-between">
       <div className="flex items-center gap-x-5">
         <Image
-          src="/placeholder.svg"
+          src={imageUrl}
           alt="user-image"
           width={100}
           height={100}
           className="h-10 w-10 object-cover rounded-full"
         />
-        <h1 className="text-2xl font-semibold">Chat Header</h1>
+        <h1 className="text-2xl font-semibold">{userName}</h1>
       </div>
       <div className="flex items-center gap-x-5">
         <Button variant="outline" size="icon">

@@ -41,7 +41,6 @@ export const AddFriendModal: FC = () => {
     data: z.infer<typeof addFriendSchema>,
   ) => {
     try {
-      console.log("Validating");
       setIsLoading(true);
 
       const response = await axios.post("http://localhost:3000/api/friends", {

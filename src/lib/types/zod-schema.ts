@@ -13,3 +13,12 @@ export const addFriendSchema = z.object({
 export const friendSchema = z.object({
   id: z.string(),
 });
+
+export const messageSchema = z.object({
+  id: z.string(),
+  senderId: z.string(),
+  text: z.string(),
+  timeStamp: z.number(),
+});
+
+export const messageArraySchema = z.array(messageSchema);

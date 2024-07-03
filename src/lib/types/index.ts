@@ -1,10 +1,30 @@
 import type { Table } from "@tanstack/react-table";
+import { z } from "zod";
+import { messageSchema } from "./zod-schema";
 
 export type User = {
   name: string;
   email: string;
   image: string;
   id: string;
+};
+
+export type Row = {
+  senderId: string;
+  senderEmail: string;
+  senderName: string;
+  senderImage: string;
+};
+
+export type Chat = {
+  id: string;
+  messages: Message[];
+};
+
+export type FriendRequest = {
+  id: string;
+  senderId: string;
+  receiverId: string;
 };
 
 export type Option = {
@@ -46,3 +66,5 @@ interface DataTableButtonProps<TData> {
 export type DataTableDownloadRowsButtonType<TData> = React.ComponentType<
   DataTableButtonProps<TData>
 >;
+
+export type Message = z.infer<typeof messageSchema>;

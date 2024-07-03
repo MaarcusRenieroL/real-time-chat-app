@@ -36,7 +36,6 @@ export const FriendRequestCellActions: FC<Props> = ({ data, rowData }) => {
 
       router.refresh();
     } catch (error) {
-      console.log(error);
       toast("Error", {
         description: "Something went wrong",
       });
@@ -62,7 +61,6 @@ export const FriendRequestCellActions: FC<Props> = ({ data, rowData }) => {
 
       router.refresh();
     } catch (error) {
-      console.log(error);
       toast("Error", {
         description: "Something went wrong",
       });

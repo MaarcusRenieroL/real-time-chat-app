@@ -10,8 +10,6 @@ export async function POST(request: NextRequest) {
 
     const { id: idToRemove } = friendSchema.parse(body);
 
-    console.log(idToRemove);
-
     const session = await auth();
 
     if (!session) {
@@ -23,8 +21,6 @@ export async function POST(request: NextRequest) {
 
     return new NextResponse("Friend removed");
   } catch (error) {
-    console.log(error);
-
     if (error instanceof ZodError) {
       return new NextResponse("Invalid request payload", { status: 422 });
     }

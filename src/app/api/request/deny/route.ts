@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { auth } from "~/lib/auth";
 import { db } from "~/lib/db";
-import { fetchRedis } from "~/lib/helpers/redis";
 import { friendSchema } from "~/lib/types/zod-schema";
 
 export async function POST(request: NextRequest) {
@@ -10,8 +9,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     const { id: idToRemove } = friendSchema.parse(body);
-
-    console.log(idToRemove);
 
     const session = await auth();
 
@@ -26,8 +23,6 @@ export async function POST(request: NextRequest) {
 
     return new NextResponse("Friend request denied");
   } catch (error) {
-    console.log(error);
-
     if (error instanceof ZodError) {
       return new NextResponse("Invalid request payload", { status: 422 });
     }
