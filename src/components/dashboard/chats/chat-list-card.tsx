@@ -26,10 +26,17 @@ export const ChatListCard: FC<ChatListCardProps> = ({
         onClick={() => onSelectChat(chat.id)}
       >
         <CardContent className="p-4 flex items-center space-x-4">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src={chat.avatar} alt={chat.name} />
-            <AvatarFallback>{chat.name.slice(0, 2)}</AvatarFallback>
-          </Avatar>
+          <div className="relative">
+            <Avatar>
+              <AvatarImage src={chat.avatar} alt={chat.name} />
+              <AvatarFallback>{chat.name.slice(0, 2)}</AvatarFallback>
+            </Avatar>
+            {chat.isActive && (
+              <span className="absolute bottom-0 end-0 size-3 rounded-full border-2 border-background bg-emerald-500">
+                <span className="sr-only">Online</span>
+              </span>
+            )}
+          </div>
           <div className="flex-1 space-y-1">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold">{chat.name}</h3>
@@ -41,9 +48,6 @@ export const ChatListCard: FC<ChatListCardProps> = ({
               {chat.lastMessage}
             </p>
           </div>
-          {chat.isActive && (
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-          )}
         </CardContent>
       </Card>
     </Link>

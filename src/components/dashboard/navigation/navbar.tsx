@@ -3,6 +3,7 @@ import { BsChat } from "react-icons/bs";
 import { Button } from "~/components/ui/button";
 import { UsersIcon } from "lucide-react";
 import { Account } from "./account-nav";
+import { ModeToggle } from "~/components/mode-toggle";
 
 export const Navbar: FC = () => {
   return (
@@ -12,6 +13,7 @@ export const Navbar: FC = () => {
         <h1 className="text-2xl font-bold">Chat App</h1>
       </div>
       <div className="flex items-center gap-5">
+        <ModeToggle />
         <Button size="icon" variant="ghost">
           <UsersIcon className="h-4 w-4" />
         </Button>

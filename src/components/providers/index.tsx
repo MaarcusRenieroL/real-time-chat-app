@@ -11,7 +11,7 @@ export const Providers: FC<Props> = ({ children }) => {
     <div>
       <ThemeProvider
         attribute="class"
-        defaultTheme="system"
+        defaultTheme="light"
         enableSystem
         disableTransitionOnChange
       >
