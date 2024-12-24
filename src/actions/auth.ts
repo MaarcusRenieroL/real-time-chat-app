@@ -1,11 +1,9 @@
 "use server";
 
-import { signIn } from "~/lib/auth";
-
 export async function signInWithGoogle() {
-  return await signIn("google");
+  return true;
 }
 
 export async function signInWithGithub() {
-  return await signIn("github");
+  return true;
 }
