@@ -22,3 +22,7 @@ export const messageSchema = z.object({
 });
 
 export const messageArraySchema = z.array(messageSchema);
+
+export const getUserByUserIdSchema = z.object({
+  userId: z.string(),
+});
