@@ -5,6 +5,7 @@ import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -12,6 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import type { FC } from "react";
+import { SettingsIcon, UserIcon } from "lucide-react";
+import Link from "next/link";
 
 type Props = {
   email: string;
@@ -32,13 +35,29 @@ export const Account: FC<Props> = ({ email }) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-xs leading-none text-muted-foreground">
-              {email}
-            </p>
-          </div>
+        <DropdownMenuLabel className="flex min-w-0 flex-col">
+          <span className="truncate text-sm font-medium text-foreground">
+            Keith Kennedy
+          </span>
+          <span className="truncate text-xs font-normal text-muted-foreground">
+            {email}
+          </span>
         </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <Link href="/settings">
+            <DropdownMenuItem>
+              <SettingsIcon className="h-4 w-4" />
+              <span>Settings</span>
+            </DropdownMenuItem>
+          </Link>
+          <Link href="/profile/id">
+            <DropdownMenuItem>
+              <UserIcon className="h-4 w-4" />
+              <span>Profile</span>
+            </DropdownMenuItem>
+          </Link>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           Log out
