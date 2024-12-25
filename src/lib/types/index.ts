@@ -52,3 +52,10 @@ export type Chat = {
   unreadCount: number;
   isActive: boolean;
 };
+
+export type MessageList = {
+  id: string;
+  content: string;
+  sender: "user" | "other";
+  timestamp: string;
+};

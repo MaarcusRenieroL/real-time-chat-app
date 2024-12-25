@@ -3,7 +3,7 @@
 import { FC, useState } from "react";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Chat } from "~/lib/types";
-import { MOCK_CHATS } from "~/lib/contants";
+import { MOCK_CHATS } from "~/lib/constants";
 import { ChatListCard } from "./chat-list-card";
 import { FilterIcon, MessageSquarePlusIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
