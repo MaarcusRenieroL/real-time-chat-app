@@ -5,8 +5,11 @@ import { MessageSquareIcon, UsersIcon } from "lucide-react";
 import { Account } from "./account-nav";
 import { ModeToggle } from "~/components/mode-toggle";
 import Link from "next/link";
+import { auth } from "~/lib/auth";
 
-export const Navbar: FC = () => {
+export const Navbar: FC = async () => {
+  const session = await auth();
+
   return (
     <header className="h-20 flex items-center justify-between px-10 py-6 border-b">
       <div className="flex items-center gap-5">
@@ -25,7 +28,11 @@ export const Navbar: FC = () => {
           </Button>
         </Link>
         <ModeToggle />
-        <Account email="email.com" />
+        <Account
+          email={session!.user!.email!}
+          name={session!.user!.name!}
+          imageUrl={session!.user!.image!}
+        />
       </div>
     </header>
   );

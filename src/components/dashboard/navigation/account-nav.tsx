@@ -18,18 +18,17 @@ import Link from "next/link";
 
 type Props = {
   email: string;
+  name: string;
+  imageUrl: string;
 };
 
-export const Account: FC<Props> = ({ email }) => {
+export const Account: FC<Props> = ({ email, name, imageUrl }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage
-              src="https://github.com/MaarcusRenieroL.png"
-              alt="logo"
-            />
+            <AvatarImage src={imageUrl} alt="logo" />
             <AvatarFallback>SC</AvatarFallback>
           </Avatar>
         </Button>
@@ -37,7 +36,7 @@ export const Account: FC<Props> = ({ email }) => {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="flex min-w-0 flex-col">
           <span className="truncate text-sm font-medium text-foreground">
-            Keith Kennedy
+            {name}
           </span>
           <span className="truncate text-xs font-normal text-muted-foreground">
             {email}
