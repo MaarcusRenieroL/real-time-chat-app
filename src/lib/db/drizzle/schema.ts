@@ -17,6 +17,7 @@ export const users = pgTable("user", {
   email: text("email").unique(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
+  chatIds: text("chatIds").array(),
 });
 
 export const accounts = pgTable(

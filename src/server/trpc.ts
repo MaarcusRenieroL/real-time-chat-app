@@ -1,4 +1,4 @@
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 
 import { Context } from "./trpc/context";
@@ -25,11 +25,18 @@ export const middleware = t.middleware;
 export const withAuth = middleware(async ({ next }) => {
   const session = await auth();
 
+  if (!session) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Please sign in again",
+    });
+  }
+
   return next({
     ctx: {
       session: {
-        userId: session!.user?.id,
-        name: session!.user?.name,
+        userId: session.user.id,
+        name: session.user.name,
       },
     },
   });

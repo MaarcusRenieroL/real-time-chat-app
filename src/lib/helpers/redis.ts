@@ -1,7 +1,8 @@
+import { redisDb } from "../db/redis/db";
 import { MessageList } from "../types";
 
-const upstashRedisRestUrl = process.env.NEXT_PUBLIC_UPSTASH_REDIS_REST_URL;
-const authToken = process.env.NEXT_PUBLIC_UPSTASH_REDIS_REST_TOKEN;
+const upstashRedisRestUrl = process.env.NEXT_PUBLIC_UPSTASH_REDIS_REST_URL!;
+const authToken = process.env.NEXT_PUBLIC_UPSTASH_REDIS_REST_TOKEN!;
 
 type Command =
   | "zrange"
@@ -38,7 +39,10 @@ export const addMessageToRedis = async (
   chatId: string,
   message: MessageList,
 ) => {
-  await fetchRedis("zadd", chatId, Date.now(), JSON.stringify(message));
+  await redisDb.zadd(chatId, {
+    score: Date.now(),
+    member: JSON.stringify(message),
+  });
 };
 
 export const getMessagesFromRedis = async (chatId: string) => {

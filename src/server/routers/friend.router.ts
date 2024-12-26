@@ -7,7 +7,6 @@ import { TRPCError } from "@trpc/server";
 import { pgDrizzleDb } from "~/lib/db/drizzle";
 import { friendRequests, friends, users } from "~/lib/db/drizzle/schema";
 import { and, eq } from "drizzle-orm";
-import { fetchRedis } from "~/lib/helpers/redis";
 import { redisDb } from "~/lib/db/redis/db";
 
 export const friendRouter = router({
@@ -189,6 +188,13 @@ export const friendRouter = router({
           )
           .limit(1);
 
+        if (!friendRequest) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Friend Request not found",
+          });
+        }
+
         await pgDrizzleDb.insert(friends).values({
           userId: friendRequest.senderId,
           friendId: friendRequest.recipientId,
@@ -208,14 +214,44 @@ export const friendRouter = router({
         const sortedIds = [session.userId, friendId].sort();
         const chatId = `${sortedIds[0]}--${sortedIds[1]}`;
 
-        const chatExists = await fetchRedis("exists", chatId);
+        const chatExists = await redisDb.exists(chatId);
 
         if (!chatExists) {
           await redisDb.zadd(chatId, {
             score: Date.now(),
-            member: JSON.stringify([]),
+            member: {},
           });
         }
+
+        const [sessionUser] = await pgDrizzleDb
+          .select({ chatIds: users.chatIds })
+          .from(users)
+          .where(eq(users.id, session.userId))
+          .limit(1);
+
+        const [friendUser] = await pgDrizzleDb
+          .select({ chatIds: users.chatIds })
+          .from(users)
+          .where(eq(users.id, friendId))
+          .limit(1);
+
+        await pgDrizzleDb
+          .update(users)
+          .set({
+            chatIds: sessionUser.chatIds
+              ? [...sessionUser.chatIds, chatId]
+              : [chatId],
+          })
+          .where(eq(users.id, session.userId));
+
+        await pgDrizzleDb
+          .update(users)
+          .set({
+            chatIds: friendUser.chatIds
+              ? [...friendUser.chatIds, chatId]
+              : [chatId],
+          })
+          .where(eq(users.id, friendId));
 
         return {
           message: "Friend request accepted",

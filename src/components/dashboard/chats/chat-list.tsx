@@ -1,17 +1,16 @@
-"use client";
-
-import { FC, useState } from "react";
+import { FC } from "react";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import { Chat } from "~/lib/types";
-import { MOCK_CHATS } from "~/lib/constants";
 import { ChatListCard } from "./chat-list-card";
 import { FilterIcon, MessageSquarePlusIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import { Chat } from "~/lib/types";
 
-export const ChatList: FC = () => {
-  const [chats, setChats] = useState<Chat[]>(MOCK_CHATS);
+type ChatListProps = {
+  chats: Chat[];
+};
 
+export const ChatList: FC<ChatListProps> = ({ chats }) => {
   return (
     <div
       className={`
@@ -33,8 +32,8 @@ export const ChatList: FC = () => {
       <div className="p-4 space-y-4">
         <Input placeholder="Search for contacts" className="w-full" />
         <ScrollArea className="flex-1">
-          {chats.map((chat: Chat) => (
-            <ChatListCard key={chat.id} chat={chat} />
+          {chats.map((chat) => (
+            <ChatListCard key={chat.chatId} chat={chat} />
           ))}
         </ScrollArea>
       </div>

@@ -45,12 +45,11 @@ export type DataTableDownloadRowsButtonType<TData> = React.ComponentType<
 export type Message = z.infer<typeof messageSchema>;
 
 export type Chat = {
-  id: string;
-  name: string;
-  avatar: string;
+  chatId: string;
+  receiverName: string;
+  imageUrl: string;
   lastMessage: string;
-  unreadCount: number;
-  isActive: boolean;
+  timestamp: string;
 };
 
 export type MessageList = {
