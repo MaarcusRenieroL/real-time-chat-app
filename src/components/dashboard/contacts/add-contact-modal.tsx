@@ -62,9 +62,6 @@ export const AddContactModal = () => {
   const handleAddContact = async (
     data: z.infer<typeof addContactFormSchema>,
   ) => {
-    const validEmails = data.emails.filter((email) => email.email.trim());
-    console.log("Sending invites to:", validEmails);
-
     await addContacts(data);
 
     form.reset();

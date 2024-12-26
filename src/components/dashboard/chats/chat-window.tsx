@@ -8,10 +8,10 @@ import { MessageList } from "~/lib/types";
 
 type ChatWindowProps = {
   chatId: string;
-  onBack?: () => void;
+  receiverName: string;
 };
 
-export const ChatWindow: FC<ChatWindowProps> = ({ chatId, onBack }) => {
+export const ChatWindow: FC<ChatWindowProps> = ({ chatId, receiverName }) => {
   const [messages, setMessages] = useState<MessageList[]>(MOCK_MESSAGES);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -35,7 +35,7 @@ export const ChatWindow: FC<ChatWindowProps> = ({ chatId, onBack }) => {
 
   return (
     <div className="h-full w-full flex flex-col items-start justify-between">
-      {onBack && <ChatNav onBack={onBack} />}
+      <ChatNav receiverName={receiverName} />
       <div className="flex-1 p-4 w-full overflow-y-auto space-y-4">
         {messages.map((message) => (
           <div

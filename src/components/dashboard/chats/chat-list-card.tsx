@@ -7,24 +7,12 @@ import Link from "next/link";
 
 type ChatListCardProps = {
   chat: Chat;
-  selectedChat: string | null;
-  onSelectChat: (chatId: string) => void;
 };
 
-export const ChatListCard: FC<ChatListCardProps> = ({
-  chat,
-  selectedChat,
-  onSelectChat,
-}) => {
+export const ChatListCard: FC<ChatListCardProps> = ({ chat }) => {
   return (
     <Link href={`/chats/${chat.id}`}>
-      <Card
-        key={chat.id}
-        className={`cursor-pointer transition-colors ${
-          selectedChat === chat.id ? "bg-primary/10 dark:bg-primary/20" : ""
-        }`}
-        onClick={() => onSelectChat(chat.id)}
-      >
+      <Card className="cursor-pointer transition-colors">
         <CardContent className="p-4 flex items-center space-x-4">
           <div className="relative">
             <Avatar>

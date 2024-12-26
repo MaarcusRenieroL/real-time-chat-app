@@ -1,20 +1,24 @@
+"use client";
+
 import { FC } from "react";
 import { Button } from "~/components/ui/button";
 import { ArrowLeft, CameraIcon, PhoneCallIcon, SearchIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type ChatNavProps = {
-  onBack?: () => void;
+  receiverName: string;
 };
 
-export const ChatNav: FC<ChatNavProps> = ({ onBack }) => {
+export const ChatNav: FC<ChatNavProps> = ({ receiverName }) => {
+  const router = useRouter();
   return (
     <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between w-full">
       <div className="flex items-center gap-5">
-        <Button variant="outline" size="icon" onClick={onBack}>
+        <Button variant="outline" size="icon" onClick={() => router.back()}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div className="">
-          <h3 className="text-xl font-bold">User name</h3>
+          <h3 className="text-xl font-bold">{receiverName}</h3>
           <p className="text-sm text-muted-foreground">Last seen at 17:05</p>
         </div>
       </div>

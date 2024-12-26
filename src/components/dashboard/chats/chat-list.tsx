@@ -9,12 +9,7 @@ import { FilterIcon, MessageSquarePlusIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 
-type SidebarProps = {
-  selectedChat: string | null;
-  onSelectChat: (chatId: string) => void;
-};
-
-export const ChatList: FC<SidebarProps> = ({ selectedChat, onSelectChat }) => {
+export const ChatList: FC = () => {
   const [chats, setChats] = useState<Chat[]>(MOCK_CHATS);
 
   return (
@@ -39,12 +34,7 @@ export const ChatList: FC<SidebarProps> = ({ selectedChat, onSelectChat }) => {
         <Input placeholder="Search for contacts" className="w-full" />
         <ScrollArea className="flex-1">
           {chats.map((chat: Chat) => (
-            <ChatListCard
-              key={chat.id}
-              chat={chat}
-              onSelectChat={onSelectChat}
-              selectedChat={selectedChat}
-            />
+            <ChatListCard key={chat.id} chat={chat} />
           ))}
         </ScrollArea>
       </div>

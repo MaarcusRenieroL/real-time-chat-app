@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { usePathname } from "next/navigation"; // For accessing the current path
 import { ChatList } from "~/components/dashboard/chats/chat-list";
 import {
   ResizableHandle,
@@ -13,33 +13,35 @@ export default function ChatsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [selectedChat, setSelectedChat] = useState<string | null>(null);
+  const pathname = usePathname(); // Get the current path
+  const isChatSelected =
+    pathname.startsWith("/chats/") && pathname !== "/chats";
 
   return (
     <>
       <div className="lg:block hidden h-full w-full">
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel defaultSize={25}>
-            <ChatList
-              selectedChat={selectedChat}
-              onSelectChat={(chatId) => setSelectedChat(chatId)}
-            />
+            <ChatList />
           </ResizablePanel>
 
           <ResizableHandle withHandle />
 
-          <ResizablePanel defaultSize={75}>{children}</ResizablePanel>
+          <ResizablePanel defaultSize={75}>
+            {isChatSelected ? (
+              children
+            ) : (
+              <div>Select a chat to start chatting</div>
+            )}
+          </ResizablePanel>
         </ResizablePanelGroup>
       </div>
 
       <div className="lg:hidden block h-full w-full">
-        {selectedChat ? (
+        {isChatSelected ? (
           <div className="h-full w-full">{children}</div>
         ) : (
-          <ChatList
-            selectedChat={selectedChat}
-            onSelectChat={(chatId) => setSelectedChat(chatId)}
-          />
+          <ChatList />
         )}
       </div>
     </>
