@@ -5,15 +5,9 @@ import {
   text,
   primaryKey,
   integer,
+  varchar,
 } from "drizzle-orm/pg-core";
-import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
 import type { AdapterAccountType } from "next-auth/adapters";
-
-const connectionString = "postgres://postgres:postgres@localhost:5432/drizzle";
-const pool = postgres(connectionString, { max: 1 });
-
-export const db = drizzle(pool);
 
 export const users = pgTable("user", {
   id: text("id")
@@ -91,3 +85,34 @@ export const authenticators = pgTable(
     }),
   }),
 );
+
+export const friends = pgTable(
+  "friends",
+  {
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    friendId: text("friendId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
+  },
+  (friends) => ({
+    compositePK: primaryKey({
+      columns: [friends.userId, friends.friendId],
+    }),
+  }),
+);
+
+export const friendRequests = pgTable("friend_requests", {
+  friendRequestId: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  senderId: text("senderId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  recipientId: text("recipientId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  status: varchar("status", { length: 20 }).notNull().default("pending"),
+});

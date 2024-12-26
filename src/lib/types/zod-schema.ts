@@ -26,3 +26,21 @@ export const messageArraySchema = z.array(messageSchema);
 export const getUserByUserIdSchema = z.object({
   userId: z.string(),
 });
+
+export const addContactFormSchema = z.object({
+  emails: z.array(
+    z.object({
+      email: z
+        .string({
+          required_error: "Email is required",
+        })
+        .email({
+          message: "Invalid email",
+        }),
+    }),
+  ),
+});
+
+export const acceptFriendRequestSchema = z.object({
+  friendId: z.string(),
+});

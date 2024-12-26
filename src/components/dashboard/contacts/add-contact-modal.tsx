@@ -5,35 +5,69 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose,
 } from "~/components/ui/dialog";
+import { FormProvider, useForm, useFieldArray } from "react-hook-form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { UserPlus, UserPlusIcon } from "lucide-react";
-import { FC, useRef, useState } from "react";
+import { toast } from "sonner";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { addContactFormSchema } from "~/lib/types/zod-schema";
+import { UserPlusIcon } from "lucide-react";
+import { trpc } from "~/server/trpc/client";
 
-export const AddContactModal: FC = () => {
-  const [emails, setEmails] = useState<string[]>([""]);
-  const lastInputRef = useRef<HTMLInputElement>(null);
+export const AddContactModal = () => {
+  const { mutateAsync: addContacts } =
+    trpc.friend.sendFriendRequest.useMutation({
+      onSuccess: (data) => {
+        toast.success("Success", {
+          description: data.message,
+        });
+      },
+      onError: (error) => {
+        toast.error("Error", {
+          description: error.message,
+        });
+      },
+    });
 
-  const addEmail = () => {
-    setEmails([...emails, ""]);
-  };
+  const form = useForm<z.infer<typeof addContactFormSchema>>({
+    resolver: zodResolver(addContactFormSchema),
+    defaultValues: {
+      emails: [
+        {
+          email: "",
+        },
+      ],
+    },
+  });
 
-  const handleEmailChange = (index: number, value: string) => {
-    const newEmails = [...emails];
-    newEmails[index] = value;
-    setEmails(newEmails);
-  };
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "emails",
+  });
 
-  const handleSendInvites = () => {
-    console.log(
-      "Sending invites to:",
-      emails.filter((email) => email.trim()),
-    );
-    setEmails([""]);
+  const handleAddContact = async (
+    data: z.infer<typeof addContactFormSchema>,
+  ) => {
+    const validEmails = data.emails.filter((email) => email.email.trim());
+    console.log("Sending invites to:", validEmails);
+
+    await addContacts(data);
+
+    form.reset();
   };
 
   return (
@@ -43,57 +77,72 @@ export const AddContactModal: FC = () => {
           <UserPlusIcon className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent
-        onOpenAutoFocus={(e) => {
-          e.preventDefault();
-          lastInputRef.current?.focus();
-        }}
-      >
-        <div className="flex flex-col gap-2">
-          <div
-            className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border"
-            aria-hidden="true"
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Add a New Contact</DialogTitle>
+          <DialogDescription>
+            Enter the email addresses of the contacts you want to add.
+          </DialogDescription>
+        </DialogHeader>
+        <FormProvider {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleAddContact)}
+            className="space-y-6"
           >
-            <UserPlus className="opacity-80" size={16} strokeWidth={2} />
-          </div>
-          <DialogHeader>
-            <DialogTitle className="text-left">Add a New Contact</DialogTitle>
-            <DialogDescription className="text-left">
-              Enter the email address of the contact you want to add.
-            </DialogDescription>
-          </DialogHeader>
-        </div>
-
-        <form className="space-y-5">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Add via email</Label>
+            <div className="space-y-4">
+              <FormLabel>
+                <Label>Add via Email</Label>
+              </FormLabel>
               <div className="space-y-3">
-                {emails.map((email, index) => (
-                  <Input
-                    key={index}
-                    id={`contact-email-${index + 1}`}
-                    placeholder="contact@example.com"
-                    type="email"
-                    value={email}
-                    onChange={(e) => handleEmailChange(index, e.target.value)}
-                    ref={index === emails.length - 1 ? lastInputRef : undefined}
+                {fields.map((field, index) => (
+                  <FormField
+                    key={field.id}
+                    control={form.control}
+                    name={`emails.${index}.email`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <div className="flex gap-2">
+                            <Input
+                              {...field}
+                              type="email"
+                              placeholder="contact@example.com"
+                            />
+                            {fields.length > 1 && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                onClick={() => remove(index)}
+                                className="px-2"
+                              >
+                                Remove
+                              </Button>
+                            )}
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 ))}
               </div>
+              <Button
+                type="button"
+                variant="link"
+                className="text-sm underline"
+                onClick={() => append({ email: "" })}
+              >
+                + Add another email
+              </Button>
             </div>
-            <button
-              type="button"
-              onClick={addEmail}
-              className="text-sm underline hover:no-underline"
-            >
-              + Add another email
-            </button>
-          </div>
-          <Button type="button" onClick={handleSendInvites} className="w-full">
-            Add Contact(s)
-          </Button>
-        </form>
+            <DialogFooter className="gap-5">
+              <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
+              <Button type="submit">Send Invites</Button>
+            </DialogFooter>
+          </form>
+        </FormProvider>
       </DialogContent>
     </Dialog>
   );
