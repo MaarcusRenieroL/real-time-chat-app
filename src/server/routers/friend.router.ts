@@ -7,6 +7,8 @@ import { TRPCError } from "@trpc/server";
 import { pgDrizzleDb } from "~/lib/db/drizzle";
 import { friendRequests, friends, users } from "~/lib/db/drizzle/schema";
 import { and, eq } from "drizzle-orm";
+import { fetchRedis } from "~/lib/helpers/redis";
+import { redisDb } from "~/lib/db/redis/db";
 
 export const friendRouter = router({
   getFriendsByUserId: privateProcedure.query(async ({ ctx }) => {
@@ -202,6 +204,18 @@ export const friendRouter = router({
           .where(
             eq(friendRequests.friendRequestId, friendRequest.friendRequestId),
           );
+
+        const sortedIds = [session.userId, friendId].sort();
+        const chatId = `${sortedIds[0]}--${sortedIds[1]}`;
+
+        const chatExists = await fetchRedis("exists", chatId);
+
+        if (!chatExists) {
+          await redisDb.zadd(chatId, {
+            score: Date.now(),
+            member: JSON.stringify([]),
+          });
+        }
 
         return {
           message: "Friend request accepted",

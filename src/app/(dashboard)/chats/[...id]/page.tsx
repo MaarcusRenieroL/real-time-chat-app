@@ -25,5 +25,12 @@ export default async function ChatPage({ params }: { params: { id: string } }) {
 
   const user = await server.user.getUserById({ userId: recipientId });
 
-  return <ChatWindow chatId={id} receiverName={user.data.name!} />;
+  return (
+    <ChatWindow
+      chatId={id.toString()}
+      receiverName={user.data.name!}
+      senderId={senderId}
+      recipientId={recipientId}
+    />
+  );
 }

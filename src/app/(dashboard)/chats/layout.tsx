@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation"; // For accessing the current path
 import { ChatList } from "~/components/dashboard/chats/chat-list";
+import { NoChatWindow } from "~/components/dashboard/chats/no-chat-window";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -28,11 +29,7 @@ export default function ChatsLayout({
           <ResizableHandle withHandle />
 
           <ResizablePanel defaultSize={75}>
-            {isChatSelected ? (
-              children
-            ) : (
-              <div>Select a chat to start chatting</div>
-            )}
+            {isChatSelected ? children : <NoChatWindow />}
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>

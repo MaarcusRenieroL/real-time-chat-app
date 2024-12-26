@@ -56,6 +56,7 @@ export type Chat = {
 export type MessageList = {
   id: string;
   content: string;
-  sender: "user" | "other";
+  senderId: string;
+  recipientId: string;
   timestamp: string;
 };

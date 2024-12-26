@@ -32,7 +32,7 @@ export const ChatInput: FC<ChatInputProps> = ({ onSendMessage }) => {
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder="Type a message..."
-          className="flex-1"
+          className="flex-1 text-sm"
           onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
         />
         <Button variant="ghost" size="icon" className="hidden sm:inline-flex">

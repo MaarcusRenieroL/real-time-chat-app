@@ -3,33 +3,52 @@
 import { FC, useEffect, useRef, useState } from "react";
 import { ChatNav } from "../chat/chat-nav";
 import { ChatInput } from "../chat/chat-input";
-import { MOCK_MESSAGES } from "~/lib/constants";
 import { MessageList } from "~/lib/types";
+import { addMessageToRedis, getMessagesFromRedis } from "~/lib/helpers/redis";
 
 type ChatWindowProps = {
   chatId: string;
   receiverName: string;
+  recipientId: string;
+  senderId: string;
 };
 
-export const ChatWindow: FC<ChatWindowProps> = ({ chatId, receiverName }) => {
-  const [messages, setMessages] = useState<MessageList[]>(MOCK_MESSAGES);
-
+export const ChatWindow: FC<ChatWindowProps> = ({
+  chatId,
+  receiverName,
+  recipientId,
+  senderId,
+}) => {
+  const [messages, setMessages] = useState<MessageList[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      const fetchedMessages = await getMessagesFromRedis(chatId);
+      setMessages(fetchedMessages);
+    };
+
+    fetchMessages();
+  }, [chatId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSendMessage = (newMessageContent: string) => {
+  const handleSendMessage = async (newMessageContent: string) => {
     const newMsg: MessageList = {
       id: Date.now().toString(),
       content: newMessageContent,
-      sender: "user",
+      senderId: senderId,
+      recipientId: recipientId,
       timestamp: new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
       }),
     };
+
+    await addMessageToRedis(chatId, newMsg);
+
     setMessages((prevMessages) => [...prevMessages, newMsg]);
   };
 
@@ -41,12 +60,12 @@ export const ChatWindow: FC<ChatWindowProps> = ({ chatId, receiverName }) => {
           <div
             key={message.id}
             className={`flex ${
-              message.sender === "user" ? "justify-end" : "justify-start"
+              message.senderId === senderId ? "justify-end" : "justify-start"
             }`}
           >
             <div
               className={`px-4 py-2 rounded-lg max-w-xs ${
-                message.sender === "user"
+                message.senderId === senderId
                   ? "bg-primary text-white dark:text-black"
                   : "bg-secondary"
               }`}
@@ -58,7 +77,6 @@ export const ChatWindow: FC<ChatWindowProps> = ({ chatId, receiverName }) => {
             </div>
           </div>
         ))}
-        {/* Scroll Anchor */}
         <div ref={messagesEndRef} />
       </div>
       <div className="w-full">
