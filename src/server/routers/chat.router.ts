@@ -3,6 +3,9 @@ import { privateProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { redisDb } from "~/lib/db/redis/db";
 import { pusherServer } from "~/lib/pusher";
+import { pgDrizzleDb } from "~/lib/db/drizzle";
+import { eq } from "drizzle-orm";
+import { users } from "~/lib/db/drizzle/schema";
 
 export const chatRouter = router({
   sendMessage: privateProcedure
@@ -60,7 +63,17 @@ export const chatRouter = router({
           member: JSON.stringify(message),
         });
 
+        console.log(senderId)
+
+        const [sender] = await pgDrizzleDb.select().from(users).where(eq(users.id, senderId)).limit(1);
+
         await pusherServer.trigger(`chat-${chatId}`, "client-new-message", message);
+
+        await pusherServer.trigger(`notifications-${recipientId}`, "new-message", {
+          chatId: chatId,
+          senderName: sender.name,
+          message: message.content,
+        });
 
         return {
           message: "Message sent successfully",
@@ -77,4 +90,5 @@ export const chatRouter = router({
         });
       }
     }),
+
 });

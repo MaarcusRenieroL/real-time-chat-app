@@ -1,23 +1,64 @@
 "use client";
 
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { ChatListCard } from "./chat-list-card";
 import { FilterIcon, MessageSquarePlusIcon, SearchIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Chat } from "~/lib/types";
+import { pusherClient } from "~/lib/pusher";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type ChatListProps = {
   chats: Chat[];
 };
 
-export const ChatList: FC<ChatListProps> = ({ chats }) => {
+export const ChatList: FC<ChatListProps> = ({ chats: prefetchedChats }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const user = useKindeBrowserClient().getUser();
+  const [chats, setChats] = useState(prefetchedChats);
+  const router = useRouter();
 
   const filteredChats = chats.filter((chat) =>
     chat.receiverName.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  useEffect(() => {
+    if (!user?.id) return;
+  
+    const channel = pusherClient.subscribe(`notifications-${user.id}`);
+  
+    channel.bind("new-message", (data: { chatId: string; senderName: string; message: string }) => {
+      setChats((prevChats) =>
+        prevChats.map((chat) =>
+          chat.chatId === data.chatId
+            ? {
+                ...chat,
+                lastMessage: data.message,
+              }
+            : chat
+        )
+      );
+
+      toast.info(`New message from ${data.senderName}: ${data.message}`, {
+        action: {
+          label: "View",
+          onClick: () => {
+            router.push(`/chats/${data.chatId}`);
+          }
+        }
+      });
+    });
+  
+    return () => {
+      pusherClient.unsubscribe(`notifications-${user.id}`);
+    };
+  }, [user?.id]);
+  
+  
 
   return (
     <div
