@@ -4,7 +4,7 @@ import { FC, useEffect, useRef, useState } from "react";
 import { ChatNav } from "../chat/chat-nav";
 import { ChatInput } from "../chat/chat-input";
 import { MessageList } from "~/lib/types";
-import { addMessageToRedis, getMessagesFromRedis } from "~/lib/helpers/redis";
+import { redisDb } from "~/lib/db/redis/db";
 
 type ChatWindowProps = {
   chatId: string;
@@ -24,8 +24,9 @@ export const ChatWindow: FC<ChatWindowProps> = ({
 
   useEffect(() => {
     const fetchMessages = async () => {
-      const fetchedMessages = await getMessagesFromRedis(chatId);
-      setMessages(fetchedMessages);
+      setMessages(
+        (await redisDb.zrange(chatId, 0, -1)).slice(1) as MessageList[],
+      );
     };
 
     fetchMessages();
@@ -47,9 +48,17 @@ export const ChatWindow: FC<ChatWindowProps> = ({
       }),
     };
 
-    await addMessageToRedis(chatId, newMsg);
+    setMessages((prevMessages) => [...prevMessages, newMsg]); // Optimistic update
 
-    setMessages((prevMessages) => [...prevMessages, newMsg]);
+    try {
+      await redisDb.zadd(chatId, {
+        score: Date.now(),
+        member: JSON.stringify(newMsg),
+      });
+    } catch (error) {
+      console.error("Failed to send message:", error);
+      // Optionally remove the message from state if the call fails
+    }
   };
 
   return (

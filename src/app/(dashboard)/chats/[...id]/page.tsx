@@ -1,10 +1,10 @@
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ChatWindow } from "~/components/dashboard/chats/chat-window";
-import { auth } from "~/lib/auth";
 import { server } from "~/server/trpc/server";
 
 export default async function ChatPage({ params }: { params: { id: string } }) {
-  const { id } = params;
-  const session = await auth();
+  const { id } = await params;
+  const sessionUser = await getKindeServerSession().getUser();
 
   if (!id) {
     return <div>No chat selected</div>;
@@ -15,7 +15,7 @@ export default async function ChatPage({ params }: { params: { id: string } }) {
   let senderId = "";
   let recipientId = "";
 
-  if (userIds[0] == session!.user.id) {
+  if (userIds[0] == sessionUser.id) {
     senderId = userIds[0];
     recipientId = userIds[1];
   } else {

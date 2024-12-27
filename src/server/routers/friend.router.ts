@@ -219,7 +219,7 @@ export const friendRouter = router({
         if (!chatExists) {
           await redisDb.zadd(chatId, {
             score: Date.now(),
-            member: {},
+            member: "",
           });
         }
 

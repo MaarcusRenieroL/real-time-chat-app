@@ -48,13 +48,13 @@ export type Chat = {
   chatId: string;
   receiverName: string;
   imageUrl: string;
-  lastMessage: string;
+  lastMessage: string | undefined;
   timestamp: string;
 };
 
 export type MessageList = {
   id: string;
-  content: string;
+  content: string | undefined;
   senderId: string;
   recipientId: string;
   timestamp: string;

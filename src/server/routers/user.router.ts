@@ -5,7 +5,7 @@ import { pgDrizzleDb } from "~/lib/db/drizzle";
 import { users } from "~/lib/db/drizzle/schema";
 import { eq } from "drizzle-orm";
 import { redisDb } from "~/lib/db/redis/db";
-import { MessageList } from "~/lib/types";
+import { Chat, MessageList } from "~/lib/types";
 
 export const userRouter = router({
   getUserById: privateProcedure
@@ -66,10 +66,21 @@ export const userRouter = router({
         .flat()
         .filter((item) => item !== session.userId);
 
-      const chats = [];
+      if (!chatIds) {
+        return {
+          message: "",
+          data: null,
+        };
+      }
+
+      const chats: Chat[] = [];
 
       for (const id of chatIds) {
-        const userIds = id!.toString().split("--");
+        if (!id) {
+          break;
+        }
+
+        const userIds = id.toString().split("--");
         let senderId = "";
         let receiverId = "";
 
@@ -81,7 +92,14 @@ export const userRouter = router({
           receiverId = userIds[0];
         }
 
-        const messages: MessageList[] = await redisDb.zrange(id!, 0, -1);
+        const messages = (await redisDb.zrange(id!, 0, -1)).slice(1) as MessageList[];
+
+        const lastMessage =
+          messages.length > 0 ? messages[messages.length - 1] : null;
+
+        if (!lastMessage) {
+          continue;
+        }
 
         const [receiver] = await pgDrizzleDb
           .select()
@@ -90,16 +108,16 @@ export const userRouter = router({
           .limit(1);
 
         chats.push({
-          chatId: id!,
+          chatId: id,
           imageUrl: receiver.image!,
           receiverName: receiver.name!,
-          lastMessage: messages[messages.length - 1].content!,
-          timestamp: messages[messages.length - 1].timestamp!,
+          lastMessage: lastMessage.content,
+          timestamp: lastMessage.timestamp,
         });
       }
 
       return {
-        message: "Chats fetched succesfully",
+        message: "Chats fetched successfully",
         data: chats,
       };
     } catch (error) {

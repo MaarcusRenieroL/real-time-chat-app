@@ -1,10 +1,20 @@
-import { Button } from "~/components/ui/button";
+"use client";
 
-export default async function Home() {
+import {
+  LoginLink,
+  RegisterLink,
+  useKindeBrowserClient,
+} from "@kinde-oss/kinde-auth-nextjs";
+
+export default function Home() {
+  const user = useKindeBrowserClient().getUser();
   return (
     <div>
       <h1>Real Time Chat App</h1>
-      <Button>Click me</Button>
+      <LoginLink>Sign In</LoginLink>
+      <RegisterLink>Sign Up</RegisterLink>
+      <br />
+      <div> {JSON.stringify(user)}</div>
     </div>
   );
 }

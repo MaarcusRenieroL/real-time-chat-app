@@ -13,7 +13,7 @@ import { Chat } from "~/lib/types";
 
 type ChatLayoutProps = {
   children: ReactNode;
-  chats: Chat[];
+  chats: Chat[] | null;
 };
 
 export const ChatLayout: FC<ChatLayoutProps> = ({ children, chats }) => {
@@ -23,7 +23,7 @@ export const ChatLayout: FC<ChatLayoutProps> = ({ children, chats }) => {
       <div className="lg:block hidden h-full w-full">
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel defaultSize={25}>
-            <ChatList chats={chats} />
+            <ChatList chats={chats ?? []} />
           </ResizablePanel>
 
           <ResizableHandle withHandle />
@@ -35,9 +35,16 @@ export const ChatLayout: FC<ChatLayoutProps> = ({ children, chats }) => {
       </div>
 
       <div className="lg:hidden block h-full w-full">
-        {pathname === "/chats" ? <ChatList chats={chats} /> : children}
+        {pathname === "/chats" ? (
+          chats && chats.length > 0 ? (
+            <ChatList chats={chats} />
+          ) : (
+            <NoChatWindow />
+          )
+        ) : (
+          children
+        )}
       </div>
     </>
   );
 };
-

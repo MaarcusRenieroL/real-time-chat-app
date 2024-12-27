@@ -5,10 +5,10 @@ import { MessageSquareIcon, UsersIcon } from "lucide-react";
 import { Account } from "./account-nav";
 import { ModeToggle } from "~/components/mode-toggle";
 import Link from "next/link";
-import { auth } from "~/lib/auth";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 export const Navbar: FC = async () => {
-  const session = await auth();
+  const user = await getKindeServerSession().getUser();
 
   return (
     <header className="h-20 flex items-center justify-between px-10 py-6 border-b">
@@ -29,9 +29,9 @@ export const Navbar: FC = async () => {
         </Link>
         <ModeToggle />
         <Account
-          email={session!.user!.email!}
-          name={session!.user!.name!}
-          imageUrl={session!.user!.image!}
+          email={user.email ?? ""}
+          name={user.given_name ?? ""}
+          imageUrl={user.picture ?? ""}
         />
       </div>
     </header>

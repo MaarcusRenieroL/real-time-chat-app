@@ -3,7 +3,7 @@ import superjson from "superjson";
 
 import { Context } from "./trpc/context";
 import { ZodError } from "zod";
-import { auth } from "~/lib/auth";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 const t = initTRPC.context<Context>().create({
   transformer: superjson,
@@ -23,20 +23,12 @@ const t = initTRPC.context<Context>().create({
 
 export const middleware = t.middleware;
 export const withAuth = middleware(async ({ next }) => {
-  const session = await auth();
-
-  if (!session) {
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-      message: "Please sign in again",
-    });
-  }
+  const loggedInUser = await getKindeServerSession().getUser();
 
   return next({
     ctx: {
       session: {
-        userId: session.user.id,
-        name: session.user.name,
+        userId: loggedInUser.id,
       },
     },
   });

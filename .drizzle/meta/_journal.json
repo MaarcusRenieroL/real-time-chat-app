@@ -43,6 +43,34 @@
       "when": 1735233396230,
       "tag": "0005_last_sabretooth",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1735281188230,
+      "tag": "0006_narrow_leper_queen",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1735282385355,
+      "tag": "0007_clever_deadpool",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1735287928008,
+      "tag": "0008_fat_meggan",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1735287993934,
+      "tag": "0009_curvy_golden_guardian",
+      "breakpoints": true
     }
   ]
 }
