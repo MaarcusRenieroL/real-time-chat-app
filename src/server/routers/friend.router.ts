@@ -1,6 +1,8 @@
+
 import {
   acceptFriendRequestSchema,
   addContactFormSchema,
+  rejectFriendRequestSchema,
 } from "~/lib/types/zod-schema";
 import { privateProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
@@ -8,6 +10,7 @@ import { pgDrizzleDb } from "~/lib/db/drizzle";
 import { friendRequests, friends, users } from "~/lib/db/drizzle/schema";
 import { and, eq } from "drizzle-orm";
 import { redisDb } from "~/lib/db/redis/db";
+import { pusherServer } from "~/lib/pusher";
 
 export const friendRouter = router({
   getFriendsByUserId: privateProcedure.query(async ({ ctx }) => {
@@ -136,6 +139,19 @@ export const friendRouter = router({
             });
           }
 
+          const pusherAction = await pusherServer.trigger(
+            `private-user-${existingUser.id}`,
+            "friend-request",
+            {
+              senderId: session.userId,
+              senderName: session.name,
+              senderEmail: session.email,
+              timestamp: new Date().toISOString(),
+            },
+          );
+
+          console.log(pusherAction);
+
           await pgDrizzleDb.insert(friendRequests).values({
             senderId: session.userId,
             recipientId: existingUser.id,
@@ -253,11 +269,58 @@ export const friendRouter = router({
           })
           .where(eq(users.id, friendId));
 
+          await pusherServer.trigger(`private-user-${friendId}`, "friend-request-accepted", {
+              id: session.userId,
+              name: session.name,
+              email: session.email,
+              avatar: session.avatar,
+              timestamp: new Date().toISOString(),
+          })
+
         return {
           message: "Friend request accepted",
         };
       } catch (error) {
         console.error("Accept Friend Request Error:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message:
+            error instanceof Error
+              ? error.message
+              : "An unexpected error occurred.",
+        });
+      }
+    }),
+  rejectFriendRequest: privateProcedure
+    .input(rejectFriendRequestSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { session } = ctx;
+      const { friendId } = input;
+
+      try {
+        if (!session) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Please sign in again",
+          });
+        }
+
+        if (!friendId) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Friend Id is required",
+          });
+        }
+
+        await pgDrizzleDb
+          .delete(friendRequests)
+          .where(eq(friendRequests.senderId, friendId));
+
+        return {
+          message: "Friend request rejected",
+        };
+      } catch (error) {
+        console.error("Reject Friend Request Error:", error);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message:

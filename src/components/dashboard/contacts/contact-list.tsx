@@ -1,22 +1,64 @@
-import { FC } from "react";
+"use client";
+
+import { FC, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Badge } from "~/components/ui/badge";
 import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { PanelsTopLeft, House } from "lucide-react";
 import { FriendUserCard } from "./friend-user-card";
 import { FriendRequestUserCard } from "./friend-request-user-card";
+import { pusherClient } from "~/lib/pusher";
+import { Friend } from "~/lib/types";
 
 type friendListProps = {
-  friends: any[];
-  friendRequests: any[];
+  friends: Friend[];
+  friendRequests: Friend[];
   userId: string;
 };
 
 export const ContactList: FC<friendListProps> = ({
   friends,
-  friendRequests,
+  friendRequests: initialFriendRequests,
   userId,
 }) => {
+  const [friendRequests, setFriendRequests] = useState<Friend[]>(initialFriendRequests);
+  const [friendsList, setFriendsList] = useState<Friend[]>(friends);
+
+  useEffect(() => {
+    const channel = pusherClient.subscribe(`private-user-${userId}`);
+
+    const handleNewRequest = (data: any) => {
+      setFriendRequests((prev) => [...prev, {
+        id: data.senderId,
+        email: data.senderEmail,
+        name: data.senderName,
+        avatar: data.senderAvatar,
+      }]);
+      toast.success(`New friend request from ${data.senderName}`);
+    };
+
+    const handleRequestAccepted = (data: any) => {
+      setFriendsList((prev) => [
+        ...prev,
+        { id: data.id, email: data.email, name: data.name, avatar: data.avatar },
+      ]);
+      setFriendRequests((prev) =>
+        prev.filter((request) => request.id !== data.id)
+      );
+      toast.success(`Your friend request to ${data.name} was accepted!`);
+    };
+
+    channel.bind("friend-request", handleNewRequest);
+    channel.bind("friend-request-accepted", handleRequestAccepted);
+
+    return () => {
+      channel.unbind("friend-request", handleNewRequest);
+      channel.unbind("friend-request-accepted", handleRequestAccepted);
+      pusherClient.unsubscribe(`private-user-${userId}`);
+    };
+  }, [userId]);
+
   return (
     <Tabs defaultValue="tab-1" className="mt-5">
       <ScrollArea>
@@ -36,7 +78,7 @@ export const ContactList: FC<friendListProps> = ({
               className="ms-1.5 min-w-5 bg-primary/15 px-1"
               variant="secondary"
             >
-              {friends.length}
+              {friendsList.length}
             </Badge>
           </TabsTrigger>
           <TabsTrigger
@@ -62,12 +104,12 @@ export const ContactList: FC<friendListProps> = ({
       </ScrollArea>
       <TabsContent value="tab-1">
         <ScrollArea className="h-[calc(100vh-250px)] p-4">
-          {friends.map((friend) => {
+          {friendsList.map((friend) => {
             const sortedIds = [userId, friend.id].sort();
             const chatId = `${sortedIds[0]}--${sortedIds[1]}`;
 
             return (
-              <FriendUserCard friend={friend} chatId={chatId} key={friend.id} />
+              <FriendUserCard friend={friend} chatId={chatId} key={`friend-${userId}-${friend.id}`} />
             );
           })}
         </ScrollArea>
@@ -75,7 +117,7 @@ export const ContactList: FC<friendListProps> = ({
       <TabsContent value="tab-2">
         <ScrollArea className="h-[calc(100vh-250px)] p-4">
           {friendRequests.map((friend) => (
-            <FriendRequestUserCard friend={friend} key={friend.id} />
+            <FriendRequestUserCard friend={friend} key={`request-${userId}-${friend.id}`} />
           ))}
         </ScrollArea>
       </TabsContent>

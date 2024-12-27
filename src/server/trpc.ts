@@ -1,4 +1,4 @@
-import { initTRPC, TRPCError } from "@trpc/server";
+import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 
 import { Context } from "./trpc/context";
@@ -29,6 +29,9 @@ export const withAuth = middleware(async ({ next }) => {
     ctx: {
       session: {
         userId: loggedInUser.id,
+        name: loggedInUser.given_name + " " + loggedInUser.family_name,
+        avatar: loggedInUser.picture,
+        email: loggedInUser.email,
       },
     },
   });

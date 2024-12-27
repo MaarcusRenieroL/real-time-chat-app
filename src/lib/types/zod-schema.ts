@@ -44,3 +44,7 @@ export const addContactFormSchema = z.object({
 export const acceptFriendRequestSchema = z.object({
   friendId: z.string(),
 });
+
+export const rejectFriendRequestSchema = z.object({
+  friendId: z.string(),
+});

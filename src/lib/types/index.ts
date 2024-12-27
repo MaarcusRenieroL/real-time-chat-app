@@ -59,3 +59,10 @@ export type MessageList = {
   recipientId: string;
   timestamp: string;
 };
+
+export type Friend = {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+}

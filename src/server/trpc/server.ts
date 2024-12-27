@@ -15,5 +15,6 @@ export const caller = createCallerFactory(appRouter)(() =>
   createTRPCContext({ req: undefined }),
 );
 
-export const { trpc: server, HydrateClient } =
-  createHydrationHelpers<typeof appRouter>(caller, getQueryClient);
+export const { trpc: server, HydrateClient } = createHydrationHelpers<
+  typeof appRouter
+>(caller, getQueryClient);
