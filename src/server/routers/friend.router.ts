@@ -150,8 +150,6 @@ export const friendRouter = router({
             },
           );
 
-          console.log(pusherAction);
-
           await pgDrizzleDb.insert(friendRequests).values({
             senderId: session.userId,
             recipientId: existingUser.id,

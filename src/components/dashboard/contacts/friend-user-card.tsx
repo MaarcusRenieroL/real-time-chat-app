@@ -1,7 +1,7 @@
 import { FC } from "react";
 
 import { CameraIcon, MessageSquareIcon, PhoneIcon } from "lucide-react";
-import { Avatar, AvatarImage } from "~/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import Link from "next/link";
 import { Friend } from "~/lib/types";
@@ -19,6 +19,7 @@ export const FriendUserCard: FC<FriendUserCardProps> = ({ friend, chatId }) => {
     >
       <Avatar>
         <AvatarImage src={friend.avatar} alt={friend.name} />
+        <AvatarFallback>{friend.name.slice(0, 2)}</AvatarFallback>
       </Avatar>
       <div className="flex-1 space-y-1">
         <p className="font-medium">{friend.name}</p>

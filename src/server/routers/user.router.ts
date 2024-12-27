@@ -109,7 +109,7 @@ export const userRouter = router({
 
         chats.push({
           chatId: id,
-          imageUrl: receiver.image!,
+          imageUrl: receiver.avatar!,
           receiverName: receiver.name!,
           lastMessage: lastMessage.content,
           timestamp: lastMessage.timestamp,

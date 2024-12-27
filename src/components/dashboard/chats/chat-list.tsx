@@ -1,7 +1,9 @@
-import { FC } from "react";
+"use client";
+
+import { FC, useState } from "react";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { ChatListCard } from "./chat-list-card";
-import { FilterIcon, MessageSquarePlusIcon } from "lucide-react";
+import { FilterIcon, MessageSquarePlusIcon, SearchIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Chat } from "~/lib/types";
@@ -11,6 +13,12 @@ type ChatListProps = {
 };
 
 export const ChatList: FC<ChatListProps> = ({ chats }) => {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredChats = chats.filter((chat) =>
+    chat.receiverName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div
       className={`
@@ -30,11 +38,31 @@ export const ChatList: FC<ChatListProps> = ({ chats }) => {
         </div>
       </div>
       <div className="p-4 space-y-4">
-        <Input placeholder="Search for contacts" className="w-full" />
+        <div className="space-y-2">
+          <div className="relative">
+            <Input
+              id="input-09"
+              className="peer ps-9 w-full text-sm"
+              placeholder="Search for contacts"
+              type="email"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+              <SearchIcon size={16} strokeWidth={2} aria-hidden="true" />
+            </div>
+          </div>
+        </div>
         <ScrollArea className="flex-1">
-          {chats.map((chat) => (
-            <ChatListCard key={chat.chatId} chat={chat} />
-          ))}
+          {filteredChats.length > 0 ? (
+            filteredChats.map((chat) => (
+              <ChatListCard key={chat.chatId} chat={chat} />
+            ))
+          ) : (
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              No chats found.
+            </p>
+          )}
         </ScrollArea>
       </div>
     </div>

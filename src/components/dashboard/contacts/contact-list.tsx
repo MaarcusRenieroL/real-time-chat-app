@@ -9,11 +9,13 @@ import { PanelsTopLeft, House } from "lucide-react";
 import { FriendUserCard } from "./friend-user-card";
 import { FriendRequestUserCard } from "./friend-request-user-card";
 import { pusherClient } from "~/lib/pusher";
-import { Friend } from "~/lib/types";
+import { Friend, User } from "~/lib/types";
+import { z } from "zod";
+import { users } from "~/lib/db/drizzle/schema";
 
 type friendListProps = {
-  friends: Friend[];
-  friendRequests: Friend[];
+  friends: User[];
+  friendRequests: User[];
   userId: string;
 };
 

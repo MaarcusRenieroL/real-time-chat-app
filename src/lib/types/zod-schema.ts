@@ -10,19 +10,6 @@ export const addFriendSchema = z.object({
     }),
 });
 
-export const friendSchema = z.object({
-  id: z.string(),
-});
-
-export const messageSchema = z.object({
-  id: z.string(),
-  senderId: z.string(),
-  text: z.string(),
-  timeStamp: z.number(),
-});
-
-export const messageArraySchema = z.array(messageSchema);
-
 export const getUserByUserIdSchema = z.object({
   userId: z.string(),
 });
@@ -48,3 +35,10 @@ export const acceptFriendRequestSchema = z.object({
 export const rejectFriendRequestSchema = z.object({
   friendId: z.string(),
 });
+
+export const sendMessageSchema = z.object({
+  chatId: z.string(),
+  newMessageContent: z.string(),
+  senderId: z.string(),
+  recipientId: z.string(),
+})

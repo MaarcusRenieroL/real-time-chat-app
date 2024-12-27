@@ -28,6 +28,7 @@ export default async function ChatPage({ params }: { params: { id: string } }) {
   return (
     <ChatWindow
       chatId={id.toString()}
+      receiverAvatar={user.data.avatar!}
       receiverName={user.data.name!}
       senderId={senderId}
       recipientId={recipientId}

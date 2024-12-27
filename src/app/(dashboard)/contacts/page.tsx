@@ -3,6 +3,7 @@ import { SearchIcon } from "lucide-react";
 import { AddContactModal } from "~/components/dashboard/contacts/add-contact-modal";
 import { ContactList } from "~/components/dashboard/contacts/contact-list";
 import { Input } from "~/components/ui/input";
+import { User } from "~/lib/types";
 import { server } from "~/server/trpc/server";
 
 export default async function ContactsPage() {
@@ -25,8 +26,8 @@ export default async function ContactsPage() {
         <AddContactModal />
       </div>
       <ContactList
-        friends={friends.data}
-        friendRequests={friendRequests!.data}
+        friends={friends.data as User[] ?? []}
+        friendRequests={friendRequests!.data as User[] ?? []}
         userId={user.id}
       />
     </div>

@@ -9,6 +9,34 @@ type ChatListCardProps = {
   chat: Chat;
 };
 
+const formatTimestamp = (timestamp: string | number | Date): string => {
+  const date = new Date(timestamp);
+  const now = new Date();
+
+  const isToday =
+    date.getDate() === now.getDate() &&
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear();
+
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const isYesterday =
+    date.getDate() === yesterday.getDate() &&
+    date.getMonth() === yesterday.getMonth() &&
+    date.getFullYear() === yesterday.getFullYear();
+
+  if (isToday) {
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+
+  if (isYesterday) {
+    return "Yesterday";
+  }
+
+  return date.toLocaleDateString();
+};
+
 export const ChatListCard: FC<ChatListCardProps> = ({ chat }) => {
   return (
     <Link href={`/chats/${chat.chatId}`}>
@@ -41,7 +69,7 @@ export const ChatListCard: FC<ChatListCardProps> = ({ chat }) => {
                 {chat.lastMessage}
               </p>
               <span className="text-xs text-gray-400 dark:text-gray-500">
-                {chat.timestamp}
+                {formatTimestamp(chat.timestamp)}
               </span>
             </div>
           </div>
