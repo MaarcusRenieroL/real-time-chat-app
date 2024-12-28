@@ -3,7 +3,6 @@ import { ThemeProvider } from "./theme-provider";
 import { Toaster } from "sonner";
 import { TrpcProvider } from "./trpc-provider";
 import { AuthProvider } from "./auth-provider";
-import { NotificationListener } from "../notification-listener";
 
 type Props = {
   children: ReactNode;
@@ -20,7 +19,6 @@ export const Providers: FC<Props> = ({ children }) => {
           disableTransitionOnChange
         >
           <TrpcProvider>
-            <NotificationListener />
             {children}
             <Toaster />
           </TrpcProvider>

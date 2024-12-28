@@ -38,20 +38,23 @@ export const ChatList: FC<ChatListProps> = ({ chats: prefetchedChats }) => {
             ? {
                 ...chat,
                 lastMessage: data.message,
+                timestamp: new Date().toISOString(),
               }
             : chat
         )
       );
 
-      toast.info(`New message from ${data.senderName}: ${data.message}`, {
-        action: {
-          label: "View",
-          onClick: () => {
-            router.push(`/chats/${data.chatId}`);
+        toast.info(data.senderName, {
+          description: data.message,
+          action: {
+            label: "View",
+            onClick: () => {
+              router.push(`/chats/${data.chatId}`);
+            }
           }
-        }
-      });
+        });
     });
+    
   
     return () => {
       pusherClient.unsubscribe(`notifications-${user.id}`);
