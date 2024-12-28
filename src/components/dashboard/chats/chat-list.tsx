@@ -9,8 +9,6 @@ import { Input } from "~/components/ui/input";
 import { Chat } from "~/lib/types";
 import { pusherClient } from "~/lib/pusher";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 
 type ChatListProps = {
   chats: Chat[];
@@ -20,48 +18,37 @@ export const ChatList: FC<ChatListProps> = ({ chats: prefetchedChats }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const user = useKindeBrowserClient().getUser();
   const [chats, setChats] = useState(prefetchedChats);
-  const router = useRouter();
 
   const filteredChats = chats.filter((chat) =>
-    chat.receiverName.toLowerCase().includes(searchTerm.toLowerCase())
+    chat.receiverName.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   useEffect(() => {
     if (!user?.id) return;
-  
-    const channel = pusherClient.subscribe(`notifications-${user.id}`);
-  
-    channel.bind("new-message", (data: { chatId: string; senderName: string; message: string }) => {
-      setChats((prevChats) =>
-        prevChats.map((chat) =>
-          chat.chatId === data.chatId
-            ? {
-                ...chat,
-                lastMessage: data.message,
-                timestamp: new Date().toISOString(),
-              }
-            : chat
-        )
-      );
 
-        toast.info(data.senderName, {
-          description: data.message,
-          action: {
-            label: "View",
-            onClick: () => {
-              router.push(`/chats/${data.chatId}`);
-            }
-          }
-        });
-    });
-    
-  
+    const channel = pusherClient.subscribe(`notifications-${user.id}`);
+
+    channel.bind(
+      "new-message",
+      (data: { chatId: string; senderName: string; message: string }) => {
+        setChats((prevChats) =>
+          prevChats.map((chat) =>
+            chat.chatId === data.chatId
+              ? {
+                  ...chat,
+                  lastMessage: data.message,
+                  timestamp: new Date().toISOString(),
+                }
+              : chat,
+          ),
+        );
+      },
+    );
+
     return () => {
       pusherClient.unsubscribe(`notifications-${user.id}`);
     };
   }, [user?.id]);
-  
-  
 
   return (
     <div

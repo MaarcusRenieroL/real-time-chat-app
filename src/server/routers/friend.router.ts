@@ -1,4 +1,3 @@
-
 import {
   acceptFriendRequestSchema,
   addContactFormSchema,
@@ -139,7 +138,7 @@ export const friendRouter = router({
             });
           }
 
-          const pusherAction = await pusherServer.trigger(
+          await pusherServer.trigger(
             `private-user-${existingUser.id}`,
             "friend-request",
             {
@@ -267,13 +266,17 @@ export const friendRouter = router({
           })
           .where(eq(users.id, friendId));
 
-          await pusherServer.trigger(`private-user-${friendId}`, "friend-request-accepted", {
-              id: session.userId,
-              name: session.name,
-              email: session.email,
-              avatar: session.avatar,
-              timestamp: new Date().toISOString(),
-          })
+        await pusherServer.trigger(
+          `private-user-${friendId}`,
+          "friend-request-accepted",
+          {
+            id: session.userId,
+            name: session.name,
+            email: session.email,
+            avatar: session.avatar,
+            timestamp: new Date().toISOString(),
+          },
+        );
 
         return {
           message: "Friend request accepted",
@@ -329,3 +332,4 @@ export const friendRouter = router({
       }
     }),
 });
+

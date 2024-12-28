@@ -6,6 +6,7 @@ import { Account } from "./account-nav";
 import { ModeToggle } from "~/components/mode-toggle";
 import Link from "next/link";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { NotificationPopover } from "./notification-popover";
 
 export const Navbar: FC = async () => {
   const user = await getKindeServerSession().getUser();
@@ -33,6 +34,7 @@ export const Navbar: FC = async () => {
           name={user.given_name ?? ""}
           imageUrl={user.picture ?? ""}
         />
+        <NotificationPopover />
       </div>
     </header>
   );

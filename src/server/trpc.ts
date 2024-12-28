@@ -23,13 +23,28 @@ const t = initTRPC.context<Context>().create({
 
 export const middleware = t.middleware;
 export const withAuth = middleware(async ({ next }) => {
-  const loggedInUser = await getKindeServerSession().getUser();
+  const session = getKindeServerSession();
+
+  const loggedInUser = await session.getUser();
+
+  if (!loggedInUser) {
+    return next({
+      ctx: {
+        session: {
+          userId: "",
+          name: "",
+          avatar: "",
+          email: "",
+        },
+      },
+    });
+  }
 
   return next({
     ctx: {
       session: {
         userId: loggedInUser.id,
-        name: loggedInUser.given_name + " " + loggedInUser.family_name,
+        name: loggedInUser.given_name + " " + (loggedInUser.family_name || ""),
         avatar: loggedInUser.picture,
         email: loggedInUser.email,
       },

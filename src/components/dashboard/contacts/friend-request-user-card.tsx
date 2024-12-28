@@ -6,10 +6,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { trpc } from "~/server/trpc/client";
 import { toast } from "sonner";
-import { Friend } from "~/lib/types";
+import { User } from "~/lib/types";
 
 type FriendRequestUserCardProps = {
-  friend: Friend;
+  friend: User;
 };
 
 export const FriendRequestUserCard: FC<FriendRequestUserCardProps> = ({
@@ -49,7 +49,8 @@ export const FriendRequestUserCard: FC<FriendRequestUserCardProps> = ({
       className="flex items-center space-x-4 p-4 border rounded-lg mt-5 hover:shadow-xl transition-all duration-500"
     >
       <Avatar>
-        <AvatarImage src={friend.avatar} alt={friend.name} />
+        <AvatarImage src={friend.avatar ?? ""} alt={friend.name ?? ""} />
+        <AvatarFallback>{friend.name?.slice(0, 2)}</AvatarFallback>
       </Avatar>
       <div className="flex-1 space-y-1">
         <p className="font-medium">{friend.name}</p>

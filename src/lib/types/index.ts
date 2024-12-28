@@ -61,12 +61,23 @@ export type Friend = {
   name: string;
   email: string;
   avatar: string;
-}
+};
 
 export type User = {
   id: string;
-  name: string;
-  email: string;
-  avatar: string;
-  chatIds: string[];
-}
+  name: string | undefined | null;
+  email: string | undefined | null;
+  avatar: string | undefined | null;
+  emailVerified?: Date | undefined | null;
+  chatIds?: string[] | undefined | null;
+};
+
+export type Notification = {
+  id: number;
+  image: string;
+  user: string;
+  action: string;
+  target: string;
+  timestamp: string;
+  unread: boolean;
+};

@@ -92,7 +92,9 @@ export const userRouter = router({
           receiverId = userIds[0];
         }
 
-        const messages = (await redisDb.zrange(id!, 0, -1)).slice(1) as MessageList[];
+        const messages = (await redisDb.zrange(id!, 0, -1)).slice(
+          1,
+        ) as MessageList[];
 
         const lastMessage =
           messages.length > 0 ? messages[messages.length - 1] : null;

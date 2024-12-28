@@ -9,9 +9,7 @@ import { PanelsTopLeft, House } from "lucide-react";
 import { FriendUserCard } from "./friend-user-card";
 import { FriendRequestUserCard } from "./friend-request-user-card";
 import { pusherClient } from "~/lib/pusher";
-import { Friend, User } from "~/lib/types";
-import { z } from "zod";
-import { users } from "~/lib/db/drizzle/schema";
+import { User } from "~/lib/types";
 
 type friendListProps = {
   friends: User[];
@@ -24,29 +22,38 @@ export const ContactList: FC<friendListProps> = ({
   friendRequests: initialFriendRequests,
   userId,
 }) => {
-  const [friendRequests, setFriendRequests] = useState<Friend[]>(initialFriendRequests);
-  const [friendsList, setFriendsList] = useState<Friend[]>(friends);
+  const [friendRequests, setFriendRequests] = useState<User[]>(
+    initialFriendRequests,
+  );
+  const [friendsList, setFriendsList] = useState<User[]>(friends);
 
   useEffect(() => {
     const channel = pusherClient.subscribe(`private-user-${userId}`);
 
     const handleNewRequest = (data: any) => {
-      setFriendRequests((prev) => [...prev, {
-        id: data.senderId,
-        email: data.senderEmail,
-        name: data.senderName,
-        avatar: data.senderAvatar,
-      }]);
-      toast.success(`New friend request from ${data.senderName}`);
+      setFriendRequests((prev) => [
+        ...prev,
+        {
+          id: data.senderId,
+          email: data.senderEmail,
+          name: data.senderName,
+          avatar: data.senderAvatar,
+        },
+      ]);
     };
 
     const handleRequestAccepted = (data: any) => {
       setFriendsList((prev) => [
         ...prev,
-        { id: data.id, email: data.email, name: data.name, avatar: data.avatar },
+        {
+          id: data.id,
+          email: data.email,
+          name: data.name,
+          avatar: data.avatar,
+        },
       ]);
       setFriendRequests((prev) =>
-        prev.filter((request) => request.id !== data.id)
+        prev.filter((request) => request.id !== data.id),
       );
       toast.success(`Your friend request to ${data.name} was accepted!`);
     };
@@ -111,16 +118,29 @@ export const ContactList: FC<friendListProps> = ({
             const chatId = `${sortedIds[0]}--${sortedIds[1]}`;
 
             return (
-              <FriendUserCard friend={friend} chatId={chatId} key={`friend-${userId}-${friend.id}`} />
+              <FriendUserCard
+                friend={friend}
+                chatId={chatId}
+                key={`friend-${userId}-${friend.id}`}
+              />
             );
           })}
         </ScrollArea>
       </TabsContent>
       <TabsContent value="tab-2">
         <ScrollArea className="h-[calc(100vh-250px)] p-4">
-          {friendRequests.map((friend) => (
-            <FriendRequestUserCard friend={friend} key={`request-${userId}-${friend.id}`} />
-          ))}
+          {friendRequests.map((friend) => {
+            if (!friend) {
+              return null;
+            }
+
+            return (
+              <FriendRequestUserCard
+                friend={friend}
+                key={`request-${userId}-${friend.id}`}
+              />
+            );
+          })}
         </ScrollArea>
       </TabsContent>
     </Tabs>
